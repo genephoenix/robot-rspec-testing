@@ -1,5 +1,12 @@
 class Robot
 
+  class RobotAlreadyDeadError < StandardError
+  end
+
+  class UnattackableEnemy < StandardError
+  end
+
+
   attr_reader :position, :items, :health
   attr_accessor :equipped_weapon
 
@@ -60,12 +67,23 @@ class Robot
     end
   end
 
-  def attack(other_robot)
+  def attack(enemy)
     if equipped_weapon
-      equipped_weapon.hit(other_robot)
+      equipped_weapon.hit(enemy)
     else
       other_robot.wound(5)
     end
   end
+
+  def heal!(amount)
+    raise RobotAlreadyDeadError, "You are already dead and are unfortunately unable to be revived." if health <= 0
+    heal(amount)
+  end
+
+  def attack!(enemy)
+    raise UnattackableEnemy, "Can't attack if enemy is not a robot" if !enemy.is_a?(Robot)
+    attack(enemy)
+  end
+
 end
 
